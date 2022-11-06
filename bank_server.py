@@ -48,10 +48,31 @@ class Customer:
 
         if recieved_data["action"] == 1337:
             print(recieved_data["data"])
-            response = self.ptp({"action": 1337, "data": {"msg": "message recieved"}})
+            response = self.ptp(
+                {"action": 1337, "data": {"msg": "message recieved"}})
             self.connection.sendall(response)
 
+        elif recieved_data["action"] == 1:
+            print(recieved_data["action"])
+            response = self.ptp(payload=self.view_accounts_list())
+            self.connection.sendall(response)
 
+    def view_accounts_list(self):
+        with open(self.accounts_file_test) as accounts:
+            data = json.load(accounts)
+        return data
+
+        # convert_to_json = json.dumps(data)
+        # return convert_to_json
+        # self.connection.sendall(convert_to_json.encode())
+        # i = 1
+        # print("\n--- Accounts at the bank ---")
+        # for info in data["accounts"]:
+        #     print(f"Customer #{i}")
+        #     print("Name:", info["name"])
+        #     #print("Balance:", info["balance"])
+        #     i = i+1
+        #     print("")
 
 
 def main():
@@ -79,6 +100,6 @@ def main():
             print(e)
             exit(1)
 
+
 if __name__ == "__main__":
     main()
-
