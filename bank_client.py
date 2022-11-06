@@ -3,7 +3,6 @@ import socket
 from threading import Thread
 
 
-
 class Client():
 
     def __init__(self, s):
@@ -18,10 +17,14 @@ class Client():
     def orchestrator(self):
         self.print_choices()
 
-        payload = self.ptp({"action": 1337, "data": {"test": 1234}}) # packar ihop payload
-        self.socket.sendall(payload) # skickar payload
-        response = self.recv_and_convert_to_json() # väntar på svar och avkodar
-        print(response) # visar datat
+        # packar ihop payload
+        # payload = self.ptp({"action": 1337, "data": {"test": 1234}})
+        choice = int(input("Enter action: "))
+
+        payload = self.ptp({"action": choice})
+        self.socket.sendall(payload)  # skickar payload
+        response = self.recv_and_convert_to_json()  # väntar på svar och avkodar
+        print(response)  # visar datat
 
         print("PROGRAM IS FINISHED")
 
@@ -36,6 +39,16 @@ class Client():
         converted_data = json.loads(received_data)
         return converted_data
 
+    def convert_customer_data(self):
+        recvd_data = self.recv_and_convert_to_json()
+        print(type(recvd_data))
+        i = 1
+        for info in recvd_data["accounts"]:
+            print(f"Customer #{i}")
+            print("Name:", info["name"])
+            i = i+1
+            print("")
+
 
 def main():
     HOST = "127.0.0.2"
@@ -47,10 +60,11 @@ def main():
             # while True:
             client = Client(s)
             client.orchestrator()
-                # Thread(target=client.orchestrator, args=()).start()
+            # Thread(target=client.orchestrator, args=()).start()
     except:
         s.close()
         print("something fuckedup")
+
 
 if __name__ == "__main__":
     main()
