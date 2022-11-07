@@ -102,7 +102,7 @@ class Client():
         #     print(f"Account balance:", info["balance"])
         #     print(" ")
 
-        pprint(recvd_data)  # This works, but this is lazy.
+        pprint(recvd_data)  # Works, but this is lazy.
 
 
 def main():

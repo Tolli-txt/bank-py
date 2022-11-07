@@ -24,7 +24,6 @@ class Customer:
     def __init__(self, connection, addr):
         self.connection = connection
         self.addr = addr
-        self.accounts_file = "accounts/accounts.json"
         self.accounts_file_test = "accounts/accounts_test.json"
 
     def recv_and_convert_to_json(self) -> dict:
