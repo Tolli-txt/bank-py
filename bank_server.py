@@ -49,17 +49,18 @@ class Customer:
                 {"action": 1337, "data": {"msg": "message received"}})
             self.connection.sendall(response)
 
-        elif received_data["action"] == 2:
-            print(received_data["action"])
-            all_accounts = self.view_accounts_list()
-            response = self.ptp({"action": 2, "data": all_accounts})
-            self.connection.sendall(response)
-
         elif received_data["action"] == 1:
             print(received_data["data"])
             self.write_to_json(
                 new_data=received_data["data"], filename=self.accounts_file_test)
-            response = self.ptp({"msg": "new account added"})
+            response = self.ptp(
+                {"action": 1, "msg": "New account added"})
+            self.connection.sendall(response)
+
+        elif received_data["action"] == 2:
+            print(received_data["action"])
+            all_accounts = self.view_accounts_list()
+            response = self.ptp({"action": 2, "data": all_accounts})
             self.connection.sendall(response)
 
     def view_accounts_list(self):
@@ -73,6 +74,15 @@ class Customer:
             data["accounts"].append(new_data)
             accounts_open.seek(0)
             json.dump(data, accounts_open, indent=4)
+
+    def view_specific_account(self, item):
+        with open(self.accounts_file_test, "r") as f:
+            data = json.load(f)
+            accounts = data["accounts"][item - 1]
+            return accounts
+
+    # choice = int(input("Who do you want to inspect? "))
+    # print(bank1.view_specific_account(item=choice))
 
 
 def main():
