@@ -32,7 +32,7 @@ class Customer:
 
     def recv_and_convert_to_json(self) -> dict:
         received_data = self.connection.recv(1024).decode()
-        print("data recieved")
+        print(f"Data received from {self.addr}")
         converted_data = json.loads(received_data)
         return converted_data
 
@@ -43,36 +43,45 @@ class Customer:
         return encoded
 
     def orchestrator(self):
-        recieved_data: dict = self.recv_and_convert_to_json()
-        print(recieved_data)
+        received_data: dict = self.recv_and_convert_to_json()
+        print(received_data)
 
-        if recieved_data["action"] == 1337:
-            print(recieved_data["data"])
+        if received_data["action"] == 1337:
+            print(received_data["data"])
             response = self.ptp(
-                {"action": 1337, "data": {"msg": "message recieved"}})
+                {"action": 1337, "data": {"msg": "message received"}})
             self.connection.sendall(response)
 
-        elif recieved_data["action"] == 1:
-            print(recieved_data["action"])
-            response = self.ptp(payload=self.view_accounts_list())
+        elif received_data["action"] == 2:
+            print(received_data["action"])
+            all_accounts = self.view_accounts_list()
+            response = self.ptp({"action": 2, "data": all_accounts})
             self.connection.sendall(response)
+
+        elif received_data["action"] == 1:
+            print(received_data["data"])
 
     def view_accounts_list(self):
         with open(self.accounts_file_test) as accounts:
             data = json.load(accounts)
         return data
 
-        # convert_to_json = json.dumps(data)
-        # return convert_to_json
-        # self.connection.sendall(convert_to_json.encode())
-        # i = 1
-        # print("\n--- Accounts at the bank ---")
-        # for info in data["accounts"]:
-        #     print(f"Customer #{i}")
-        #     print("Name:", info["name"])
-        #     #print("Balance:", info["balance"])
-        #     i = i+1
-        #     print("")
+    def add_new_account(self, new_name, new_balance):
+        name = new_name
+        balance = new_balance
+        new_acc_dict = {
+            "name": name,
+            "balance": balance
+        }
+        self.write_to_json(new_data=new_acc_dict,
+                           filename=self.accounts_file_test)
+
+    def write_to_json(self, new_data, filename):
+        with open(filename, "r+") as accounts_open:
+            data = json.load(accounts_open)
+            data["accounts"].append(new_data)
+            accounts_open.seek(0)
+            json.dump(data, accounts_open, indent=4)
 
 
 def main():
