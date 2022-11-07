@@ -29,8 +29,12 @@ class Client():
         #payload = self.ptp({"action": final_action})
         self.socket.sendall(final_action)  # skickar payload
 
-        response = self.recv_and_convert_to_json()  # väntar på svar och avkodar
-        print(response)  # visar datat
+        response = self.recv_and_convert_to_json()
+        # väntar på svar och avkodar
+        final_response = self.handle_response(server_data=response)
+        print(final_response)
+
+        # print(response)  # visar datat
 
         print("PROGRAM IS FINISHED")
 
@@ -45,6 +49,16 @@ class Client():
         encoded = stringify.encode()
         return encoded
 
+    def handle_response(self, server_data):
+        if server_data["action"] == 1:
+            response = print(server_data["msg"])
+        elif server_data["action"] == 2:
+            response = self.convert_customer_data(
+                recvd_data=server_data["data"])
+
+        final_response = response
+        return final_response
+
     def handle_send_choice(self, choice):
         if choice == 1:
             new_acc = self.new_account_dump()
@@ -53,23 +67,9 @@ class Client():
         elif choice == 2:
             payload = self.ptp({"action": choice})
             self.socket.sendall(payload)
+
         final_payload = payload
         return final_payload
-
-    def dump_to_json(self):
-        new_data = self.recv_and_convert_to_json()
-        with open(self.client_accounts_file, "r+") as clients:
-            data = json.load(clients)
-            data = []
-            data.append(new_data)
-            clients.seek(0)
-            new_info = json.dump(data, clients, indent=4)
-        return new_info
-
-    def handle_response(self, server_data):
-        server_data = self.recv_and_convert_to_json()
-        if server_data[""]:
-            pass
 
     def new_account_dump(self):
         new_name = input("Enter customers name: ")
@@ -77,18 +77,16 @@ class Client():
         new_client_dict = {"name": new_name, "balance": new_balance}
         return new_client_dict
 
-    def convert_customer_data(self):
-        data = self.dump_to_json()
-        # recvd_data = self.socket.recv(1024).decode()
-        # converted_data = json.loads(recvd_data)
-        # print(type(converted_data))
-        # i = 1
-        # for info in data["data"]["accounts"]:
-        #     print(f"Customer #{i}")
-        #     print(f"Name:", info["name"])
-        #     i = i+1
-        #     print("")
-        print(type(data))
+    def convert_customer_data(self, recvd_data):
+        i = 1
+        for info in recvd_data["accounts"]:
+            print("### LIST OF ACCOUNTS ###")
+            print(f"Account #{i}")
+            print(f"Name:", info["name"])
+            i = i+1
+            print("")
+        return
+        # print(type(data))
         # pprint(data)
 
 
@@ -109,6 +107,15 @@ def main():
 if __name__ == "__main__":
     main()
 
+    # def dump_to_json(self):
+    #     new_data = self.recv_and_convert_to_json()
+    #     with open(self.client_accounts_file, "r+") as clients:
+    #         data = json.load(clients)
+    #         data = []
+    #         data.append(new_data)
+    #         clients.seek(0)
+    #         new_info = json.dump(data, clients, indent=4)
+    #     return new_info
     # def cases(self, argument):
     #     case_choice = argument
     #     match case_choice:
