@@ -63,6 +63,13 @@ class Customer:
             response = self.ptp({"action": 2, "data": all_accounts})
             self.connection.sendall(response)
 
+        elif received_data["action"] == 3:
+            print(received_data["data"])
+            spec_acc_info = self.view_specific_account(
+                item=received_data["data"])
+            response = self.ptp({"action": 3, "data": spec_acc_info})
+            self.connection.sendall(response)
+
     def view_accounts_list(self):
         with open(self.accounts_file_test) as accounts:
             data = json.load(accounts)
@@ -78,8 +85,8 @@ class Customer:
     def view_specific_account(self, item):
         with open(self.accounts_file_test, "r") as f:
             data = json.load(f)
-            accounts = data["accounts"][item - 1]
-            return accounts
+            accounts = data["accounts"][item]
+        return accounts
 
     # choice = int(input("Who do you want to inspect? "))
     # print(bank1.view_specific_account(item=choice))
