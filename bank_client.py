@@ -24,13 +24,20 @@ class Client():
         # payload = self.ptp({"action": 1337, "data": {"test": 1234}})
         action = int(input("Enter action: "))
 
-        payload = self.ptp({"action": action})
-        self.socket.sendall(payload)  # skickar payload
+        final_action = self.handle_send_choice(choice=action)
 
-        response = self.convert_customer_data()  # väntar på svar och avkodar
+        #payload = self.ptp({"action": final_action})
+        self.socket.sendall(final_action)  # skickar payload
+
+        response = self.recv_and_convert_to_json()  # väntar på svar och avkodar
         print(response)  # visar datat
 
         print("PROGRAM IS FINISHED")
+
+    def recv_and_convert_to_json(self):
+        received_data = self.socket.recv(1024).decode()
+        converted_data = json.loads(received_data)
+        return converted_data
 
     def ptp(self, payload):
         # pack the payload
@@ -38,10 +45,16 @@ class Client():
         encoded = stringify.encode()
         return encoded
 
-    def recv_and_convert_to_json(self):
-        received_data = self.socket.recv(1024).decode()
-        converted_data = json.loads(received_data)
-        return converted_data
+    def handle_send_choice(self, choice):
+        if choice == 1:
+            new_acc = self.new_account_dump()
+            payload = self.ptp({"action": 1, "data": new_acc})
+            return payload
+        elif choice == 2:
+            payload = self.ptp({"action": choice})
+            self.socket.sendall(payload)
+        final_payload = payload
+        return final_payload
 
     def dump_to_json(self):
         new_data = self.recv_and_convert_to_json()
@@ -58,19 +71,11 @@ class Client():
         if server_data[""]:
             pass
 
-    def new_account_input(self):
-        name_input = input("Enter customers name: ")
-        balance_input = int(input("Enter account balance: "))
-        both_inputs = name_input + balance_input
-        payload = self.ptp(both_inputs)
-        return payload
-
     def new_account_dump(self):
-        new_acc = self.new_account_input()
-        with open(self.client_new_acc_file, "w") as f:
-            data = json.load(f)
-            data.append(new_acc)
-        # lägg till något sätt att lägga in som dict
+        new_name = input("Enter customers name: ")
+        new_balance = int(input("Enter account balance: "))
+        new_client_dict = {"name": new_name, "balance": new_balance}
+        return new_client_dict
 
     def convert_customer_data(self):
         data = self.dump_to_json()
@@ -85,14 +90,6 @@ class Client():
         #     print("")
         print(type(data))
         # pprint(data)
-
-    def handle_send_choice(self, choice):
-        if choice == 1:
-            self.new_account_input()
-        elif choice == 2:
-            payload = self.ptp({"action": choice})
-            self.socket.sendall(payload)
-        return choice
 
 
 def main():
@@ -144,3 +141,23 @@ if __name__ == "__main__":
 #     except:
 #         s.close()
 #         print("something fuckedup")
+
+    # def acc_dump_to_json(self, new_data):
+    #     with open(self.client_new_acc_file, 'r+') as accounts_open:
+    #         data = json.load(accounts_open)
+    #         data = []
+    #         data.append(new_data)
+    #         accounts_open.seek(0)
+    #         json.dump(data, accounts_open, indent=4)
+
+    # def return_json(self):
+    #     with open(self.client_new_acc_file, "r") as f:
+    #         data = json.load(f)
+    #     return data
+    #     # converted_json = self.ptp(data)
+    #     # return converted_json
+
+    # def new_account(self):
+    #     new_acc = self.new_account_dump()
+    #     self.acc_dump_to_json(new_data=new_acc)
+    #     self.return_json()
