@@ -9,6 +9,7 @@ class Client():
     def __init__(self, s):
         self.socket: socket = s
         self.client_accounts_file = 'accounts/client_accounts.json'
+        self.client_new_acc_file = 'accounts/client_new_account.json'
 
     def print_choices(self):
         print("\nWelcome to the bank, what do you want to do?")
@@ -30,6 +31,12 @@ class Client():
         print(response)  # visar datat
 
         print("PROGRAM IS FINISHED")
+
+    def ptp(self, payload):
+        # pack the payload
+        stringify = json.dumps(payload)
+        encoded = stringify.encode()
+        return encoded
 
     def recv_and_convert_to_json(self):
         received_data = self.socket.recv(1024).decode()
@@ -58,6 +65,13 @@ class Client():
         payload = self.ptp(both_inputs)
         return payload
 
+    def new_account_dump(self):
+        new_acc = self.new_account_input()
+        with open(self.client_new_acc_file, "w") as f:
+            data = json.load(f)
+            data.append(new_acc)
+        # lägg till något sätt att lägga in som dict
+
     def convert_customer_data(self):
         data = self.dump_to_json()
         # recvd_data = self.socket.recv(1024).decode()
@@ -71,12 +85,6 @@ class Client():
         #     print("")
         print(type(data))
         # pprint(data)
-
-    def ptp(self, payload):
-        # pack the payload
-        stringify = json.dumps(payload)
-        encoded = stringify.encode()
-        return encoded
 
     def handle_send_choice(self, choice):
         if choice == 1:
