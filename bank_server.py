@@ -1,18 +1,15 @@
 '''
 Krav för G
-TODO: Du kan lägga till en kund i registret - Klar
-TODO: Du kan fråga servern om vilka kunder som finns - Klar
-TODO: Du kan fråga om detaljer för en specifik kund - Klar
-TODO: Du skriver något enhetstest - Försök skriva så många som möjligt,
-försök dela upp funktioner om det går?
+TODO: Du kan lägga till en kund i registret
+Status: Klar, funkar mellan server o klient
+TODO: Du kan fråga servern om vilka kunder som finns
+Status: Inte helt klar, måste få klienten att printa viss information.
+TODO: Du kan fråga om detaljer för en specifik kund
+Status: Inte helt klar, samma som ovan.
 
-"bank-server.py" ska vara server
-"bank-client.py" ska vara klient
-Måste göra så att servern exekverar funktioner 
-beroende på input från klient
-
-TODO: Gör om funktionerna för att skicka data till klienten.
-ta inspiration från funktionen för att visa alla konton.
+TODO: Du skriver något enhetstest - 
+Försök skriva så många som möjligt, försök dela upp funktioner om det går?
+Status: Ja du...
 '''
 
 import json
@@ -44,7 +41,7 @@ class Customer:
 
     def orchestrator(self):
         received_data: dict = self.recv_and_convert_to_json()
-        print(received_data)
+        print(f"Received data: {received_data}")
 
         if received_data["action"] == 1337:
             print(received_data["data"])
@@ -60,21 +57,15 @@ class Customer:
 
         elif received_data["action"] == 1:
             print(received_data["data"])
+            self.write_to_json(
+                new_data=received_data["data"], filename=self.accounts_file_test)
+            response = self.ptp({"msg": "new account added"})
+            self.connection.sendall(response)
 
     def view_accounts_list(self):
         with open(self.accounts_file_test) as accounts:
             data = json.load(accounts)
         return data
-
-    def add_new_account(self, new_name, new_balance):
-        name = new_name
-        balance = new_balance
-        new_acc_dict = {
-            "name": name,
-            "balance": balance
-        }
-        self.write_to_json(new_data=new_acc_dict,
-                           filename=self.accounts_file_test)
 
     def write_to_json(self, new_data, filename):
         with open(filename, "r+") as accounts_open:
