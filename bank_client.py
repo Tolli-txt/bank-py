@@ -34,8 +34,6 @@ class Client():
         final_response = self.handle_response(server_data=response)
         print(final_response)
 
-        # print(response)  # visar datat
-
         print("PROGRAM IS FINISHED")
 
     def recv_and_convert_to_json(self):
@@ -55,6 +53,9 @@ class Client():
         elif server_data["action"] == 2:
             response = self.convert_customer_data(
                 recvd_data=server_data["data"])
+        elif server_data["action"] == 3:
+            response = self.convert_spec_acc_info(
+                recvd_data=server_data["data"])
 
         final_response = response
         return final_response
@@ -66,6 +67,10 @@ class Client():
             return payload
         elif choice == 2:
             payload = self.ptp({"action": choice})
+            self.socket.sendall(payload)
+        elif choice == 3:
+            spec_choice = self.view_specific_account()
+            payload = self.ptp({"action": 3, "data": spec_choice})
             self.socket.sendall(payload)
 
         final_payload = payload
@@ -79,15 +84,25 @@ class Client():
 
     def convert_customer_data(self, recvd_data):
         i = 1
+        print("\n### LIST OF ACCOUNTS ###")
         for info in recvd_data["accounts"]:
-            print("### LIST OF ACCOUNTS ###")
             print(f"Account #{i}")
             print(f"Name:", info["name"])
             i = i+1
             print("")
         return
-        # print(type(data))
-        # pprint(data)
+
+    def view_specific_account(self):
+        choice = int(input("What account do you want to inspect? "))
+        return choice
+
+    def convert_spec_acc_info(self, recvd_data):
+        # for info in recvd_data:
+        #     print(f"Customer name:", info["name"])
+        #     print(f"Account balance:", info["balance"])
+        #     print(" ")
+
+        pprint(recvd_data)  # This works, but this is lazy.
 
 
 def main():
