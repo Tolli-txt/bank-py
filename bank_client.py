@@ -1,6 +1,6 @@
 import json
 import socket
-from threading import Thread
+#from threading import Thread
 from pprint import pprint
 
 
@@ -8,8 +8,6 @@ class Client():
 
     def __init__(self, s):
         self.socket: socket = s
-        self.client_accounts_file = 'accounts/client_accounts.json'
-        self.client_new_acc_file = 'accounts/client_new_account.json'
 
     def print_choices(self):
         print("\nWelcome to the bank, what do you want to do?")
@@ -20,17 +18,11 @@ class Client():
     def orchestrator(self):
         self.print_choices()
 
-        # packar ihop payload
-        # payload = self.ptp({"action": 1337, "data": {"test": 1234}})
         action = int(input("Enter action: "))
-
         final_action = self.handle_send_choice(choice=action)
-
-        #payload = self.ptp({"action": final_action})
-        self.socket.sendall(final_action)  # skickar payload
+        self.socket.sendall(final_action)
 
         response = self.recv_and_convert_to_json()
-        # väntar på svar och avkodar
         final_response = self.handle_response(server_data=response)
         print(final_response)
 
@@ -97,12 +89,8 @@ class Client():
         return choice
 
     def convert_spec_acc_info(self, recvd_data):
-        # for info in recvd_data:
-        #     print(f"Customer name:", info["name"])
-        #     print(f"Account balance:", info["balance"])
-        #     print(" ")
-
-        pprint(recvd_data)  # Works, but this is lazy.
+        print("\nRaw account info.")
+        pprint(recvd_data)
 
 
 def main():
@@ -111,75 +99,10 @@ def main():
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        # while True:
+        # while True: # Program freezes with True-loop, tried debugging but couldn't figure out why
         client = Client(s)
         client.orchestrator()
-
-    # client.orchestrator()
-    # Thread(target=client.orchestrator, args=()).start()
 
 
 if __name__ == "__main__":
     main()
-
-    # def dump_to_json(self):
-    #     new_data = self.recv_and_convert_to_json()
-    #     with open(self.client_accounts_file, "r+") as clients:
-    #         data = json.load(clients)
-    #         data = []
-    #         data.append(new_data)
-    #         clients.seek(0)
-    #         new_info = json.dump(data, clients, indent=4)
-    #     return new_info
-    # def cases(self, argument):
-    #     case_choice = argument
-    #     match case_choice:
-    #         case "all accounts":
-    #             return self.convert_customer_data()
-    #         case "specific account":
-    #             pass
-
-    # def handle_response(self, argument):
-    #     if argument["action"] == 1:
-    #         self.convert_customer_data()
-    #     elif argument["data"] == "nothing":
-    #         pass
-    #     return
-
-
-# def main():
-#     HOST = "127.0.0.2"
-#     PORT = 50009
-
-#     try:
-#         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#             s.connect((HOST, PORT))
-#             # while True:
-#             client = Client(s)
-#             client.orchestrator()
-
-#         # client.orchestrator()
-#         # Thread(target=client.orchestrator, args=()).start()
-#     except:
-#         s.close()
-#         print("something fuckedup")
-
-    # def acc_dump_to_json(self, new_data):
-    #     with open(self.client_new_acc_file, 'r+') as accounts_open:
-    #         data = json.load(accounts_open)
-    #         data = []
-    #         data.append(new_data)
-    #         accounts_open.seek(0)
-    #         json.dump(data, accounts_open, indent=4)
-
-    # def return_json(self):
-    #     with open(self.client_new_acc_file, "r") as f:
-    #         data = json.load(f)
-    #     return data
-    #     # converted_json = self.ptp(data)
-    #     # return converted_json
-
-    # def new_account(self):
-    #     new_acc = self.new_account_dump()
-    #     self.acc_dump_to_json(new_data=new_acc)
-    #     self.return_json()
