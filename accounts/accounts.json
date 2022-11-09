@@ -22,11 +22,11 @@
         },
         {
             "name": "oskar",
-            "balance": 1337
+            "balance": 5678
         },
         {
             "name": "jimmy",
-            "balance": 1337
+            "balance": 3000
         },
         {
             "name": "testguy",
@@ -34,11 +34,11 @@
         },
         {
             "name": "Antanas",
-            "balance": 133742069
+            "balance": 1345
         },
         {
             "name": "final Test",
-            "balance": 1337
+            "balance": 2000
         }
     ]
 }
