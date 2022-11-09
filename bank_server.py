@@ -1,30 +1,14 @@
-'''
-Krav för G
-TODO: Du kan lägga till en kund i registret
-Status: Klar, funkar mellan server o klient
-TODO: Du kan fråga servern om vilka kunder som finns
-Status: Inte helt klar, måste få klienten att printa viss information.
-TODO: Du kan fråga om detaljer för en specifik kund
-Status: Inte helt klar, samma som ovan.
-
-TODO: Du skriver något enhetstest - 
-Försök skriva så många som möjligt, försök dela upp funktioner om det går?
-Status: Ja du...
-'''
-
 import json
 import socket
-from threading import Thread
-
-from pprint import pprint
+#from threading import Thread
 
 
-class Customer:
+class BankServer():
 
     def __init__(self, connection, addr):
         self.connection = connection
         self.addr = addr
-        self.accounts_file_test = "accounts/accounts_test.json"
+        self.accounts_file = "accounts/accounts.json"
 
     def recv_and_convert_to_json(self) -> dict:
         received_data = self.connection.recv(1024).decode()
@@ -33,7 +17,6 @@ class Customer:
         return converted_data
 
     def ptp(self, payload):
-        # pack the payload
         stringify = json.dumps(payload)
         encoded = stringify.encode()
         return encoded
@@ -51,7 +34,7 @@ class Customer:
         elif received_data["action"] == 1:
             print(received_data["data"])
             self.write_to_json(
-                new_data=received_data["data"], filename=self.accounts_file_test)
+                new_data=received_data["data"], filename=self.accounts_file)
             response = self.ptp(
                 {"action": 1, "msg": "New account added"})
             self.connection.sendall(response)
@@ -70,7 +53,7 @@ class Customer:
             self.connection.sendall(response)
 
     def view_accounts_list(self):
-        with open(self.accounts_file_test) as accounts:
+        with open(self.accounts_file) as accounts:
             data = json.load(accounts)
         return data
 
@@ -82,13 +65,10 @@ class Customer:
             json.dump(data, accounts_open, indent=4)
 
     def view_specific_account(self, item):
-        with open(self.accounts_file_test, "r") as f:
+        with open(self.accounts_file, "r") as f:
             data = json.load(f)
             accounts = data["accounts"][item]
         return accounts
-
-    # choice = int(input("Who do you want to inspect? "))
-    # print(bank1.view_specific_account(item=choice))
 
 
 def main():
@@ -104,9 +84,8 @@ def main():
             while True:
                 conn, addr = s.accept()
                 print(f"Connection from: {addr}")
-                bank1 = Customer(conn, addr)
+                bank1 = BankServer(conn, addr)
                 bank1.orchestrator()
-                # Thread(target=bank1.orchestrator, args=()).start()
         except KeyboardInterrupt:
             s.close()
             exit(1)
