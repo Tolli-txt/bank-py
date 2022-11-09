@@ -1,0 +1,44 @@
+{
+    "accounts": [
+        {
+            "name": "John",
+            "balance": 1000
+        },
+        {
+            "name": "Jane",
+            "balance": 1500
+        },
+        {
+            "name": "test",
+            "balance": 123
+        },
+        {
+            "name": "test2",
+            "balance": 166665342
+        },
+        {
+            "name": "New Guy",
+            "balance": 420
+        },
+        {
+            "name": "oskar",
+            "balance": 1337
+        },
+        {
+            "name": "jimmy",
+            "balance": 1337
+        },
+        {
+            "name": "testguy",
+            "balance": 12345
+        },
+        {
+            "name": "Antanas",
+            "balance": 133742069
+        },
+        {
+            "name": "final Test",
+            "balance": 1337
+        }
+    ]
+}
