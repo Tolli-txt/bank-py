@@ -19,15 +19,18 @@ In the tests folder you will find the `test_bank.py` file which has been used fo
 1. Enter virtual environment.
 
 Linux / OSX
-<p>`python -m venv .venv  # could also be python3`
-`source .venv/bin/activate`</p>
+`python -m venv .venv  # could also be python3`
+
+`source .venv/bin/activate`
 
 Windows - cmd.exe
-<p>`python -m venv .venv`
-`.venv\Scripts\activate.bat`</p>
+`python -m venv .venv`
+
+`.venv\Scripts\activate.bat`
 
 Windows - PowerShell
-<p>`py -m venv .venv`
-`.\.venv\Scripts\Activate.ps1`</p>
+`py -m venv .venv`
+
+`.\.venv\Scripts\Activate.ps1`
 
 2. In the command line, write `pytest tests/test_bank.py` or just `tox`
