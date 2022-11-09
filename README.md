@@ -36,4 +36,5 @@ Windows - PowerShell
 2. Install requirements
 
 `pip install -r requirements.txt`
+
 3. In the command line, write `pytest tests/test_bank.py` or just `tox`
